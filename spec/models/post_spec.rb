@@ -2,12 +2,29 @@ require 'spec_helper'
 
 describe Post do
   describe "behaviour of markers with mistaken contexts" do
+    let(:post) { create :filled_post }
+
+    it "Set group of markers on post" do
+      post.update(mark_with: {
+        actors: ["Брюс Уиллис", "Эдди Мёрфи", "Sigourney Weaver"],
+        stars:  ["Sigourney Weaver", " twenty-cent", "20 '¢' cents"]
+      })
+
+      MarkersContext.count.should eq 2
+      Marker.count.should         eq 5
+
+      MarkersContext.first.markers.count.should eq 3
+      MarkersContext.last.markers.count.should  eq 2
+    end
+  end
+
+  describe "behaviour of markers with mistaken contexts" do
     let(:post_1) { create :filled_post }
     let(:post_2) { create :filled_post }
 
     it ":on param should not have an effect on existed marker" do
-      post_1.mark_with "Брюс Уиллис", on: :actors
-      post_2.mark_with "Брюс Уиллис", on: :starts
+      post_1.set_marker "Брюс Уиллис", on: :actors
+      post_2.set_marker "Брюс Уиллис", on: :starts
 
       Marker.count.should         eq 1
       MarkersContext.count.should eq 1
@@ -28,7 +45,7 @@ describe Post do
     let(:post) { create :filled_post }
 
     it "mark on :default context" do
-      post.mark_with "Брюс Уиллис"
+      post.set_marker "Брюс Уиллис"
 
       post.reload
       post.markers.count.should   eq 1
@@ -36,7 +53,7 @@ describe Post do
     end
 
     it "mark on :actors context" do
-      post.mark_with "Брюс Уиллис", on: :actors
+      post.set_marker "Брюс Уиллис", on: :actors
 
       post.reload
       post.markers.count.should   eq 1
@@ -45,8 +62,8 @@ describe Post do
     end
 
     it "mark on :actors context" do
-      post.mark_with "Брюс Уиллис", on: :actors
-      post.mark_with "Брюс Уиллис", on: :actors
+      post.set_marker "Брюс Уиллис", on: :actors
+      post.set_marker "Брюс Уиллис", on: :actors
       
       post.reload
       post.markers.count.should   eq 1
@@ -54,8 +71,8 @@ describe Post do
     end
 
     it "mark on :actors context" do
-      post.mark_with "Брюс Уиллис", on: :actors
-      post.mark_with "Дэми Мур",   on: :actors
+      post.set_marker "Брюс Уиллис", on: :actors
+      post.set_marker "Дэми Мур",   on: :actors
       
       post.reload
       post.markers.count.should   eq 2
@@ -63,8 +80,8 @@ describe Post do
     end
 
     it "mark on :actors, :stars contexts" do
-      post.mark_with "Брюс Уиллис", on: :actors
-      post.mark_with "Дэми Мур",   on: :stars
+      post.set_marker "Брюс Уиллис", on: :actors
+      post.set_marker "Дэми Мур",   on: :stars
       
       post.reload
       post.markers.count.should   eq 2

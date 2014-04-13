@@ -3,6 +3,11 @@ class MarkersContext < ActiveRecord::Base
   validates :title, :slug, presence: true
   before_validation :prepare_slug, on: :create
   
+  def self.find_markers_context context_name
+    where(slug:  HasMarkers.slug_for(context_name)).first ||
+    where(title: context_name).first
+  end
+
   private
 
   def prepare_slug

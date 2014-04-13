@@ -16,8 +16,8 @@ FactoryGirl.define do
     content { some_text   }
 
     after(:create) do |post, evaluator|
-      post.mark_with "Bruce Willis", on: :actors
-      post.mark_with "Demi Moore",   on: :stars
+      post.set_marker "Bruce Willis", on: :actors
+      post.set_marker "Demi Moore",   on: :stars
     end
   end
 end

@@ -11,7 +11,12 @@ class Marker < ActiveRecord::Base
 
   before_validation :prepare_context, on: :create
   before_validation :prepare_slug, on: :create
-  
+
+  def self.find_marker title
+    where(slug:  HasMarkers.slug_for(title)).first ||
+    where(title: title).first
+  end
+
   private
 
   def prepare_slug

@@ -43,6 +43,8 @@ describe Marker do
       Marker.all.each do |m|
         puts "Marker: #{ m.slug } => #{ m.title }"
       end
+
+      MarkersContext.count.should eq 1
     end
   end
 
