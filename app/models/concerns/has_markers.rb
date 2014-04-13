@@ -12,6 +12,23 @@ module HasMarkers
 
     after_save :mark_object
 
+    def set_marker title, opts = {}
+      opts.symbolize_keys!
+      context_name = opts.delete(:on)
+
+      marker = find_or_create_marker(title, context_name)
+      marker_relations.create(marker: marker)
+    end
+
+    def remove_marker title
+      marker = Marker.find_marker(title)
+      rel = marker_relations.where(marker: marker).first
+      return false unless rel
+      rel.destroy
+    end
+
+    private
+
     def mark_object
       return true  if  mark_with.blank?
       return false if !mark_with.is_a?(Hash)
@@ -19,17 +36,10 @@ module HasMarkers
       mark_with.each_pair do |context, markers|
         markers = markers.map(&:strip).reject(&:blank?)
         markers.each do |marker|
+          # collect validation errors from markers here
           set_marker marker, on: context
         end
       end
-    end
-
-    def set_marker title, opts = {}
-      opts.symbolize_keys!
-      context_name = opts.delete(:on)
-
-      marker = find_or_create_marker(title, context_name)
-      marker_relations.create(marker: marker)
     end
 
     def find_or_create_markers_context context_name

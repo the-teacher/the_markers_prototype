@@ -1,7 +1,36 @@
 require 'spec_helper'
 
 describe Post do
-  describe "behaviour of markers with mistaken contexts" do
+
+  describe "unmark object" do
+    let(:post) { create :filled_post_marked_with_2_markers_on_2_contexts }
+
+    it "should unmark object" do
+      post.markers.count.should   eq 2
+      MarkerRelation.count.should eq 2
+      Marker.count.should         eq 2
+
+      post.remove_marker("Bruce Willis").should_not eq false
+
+      post.markers.count.should   eq 1
+      MarkerRelation.count.should eq 1
+      Marker.count.should         eq 2
+    end
+
+    it "should unmark object" do
+      post.markers.count.should   eq 2
+      MarkerRelation.count.should eq 2
+      Marker.count.should         eq 2
+
+      post.remove_marker("Unexisted Marker").should eq false
+
+      post.markers.count.should   eq 2
+      MarkerRelation.count.should eq 2
+      Marker.count.should         eq 2
+    end
+  end
+
+  describe "mark with API" do
     let(:post) { create :filled_post }
 
     it "Set group of markers on post" do
