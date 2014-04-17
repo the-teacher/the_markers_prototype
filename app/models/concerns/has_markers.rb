@@ -49,10 +49,7 @@ module HasMarkers
       
       mark_with.each_pair do |context, markers|
         markers = markers.map(&:strip).reject(&:blank?)
-        markers.each do |marker|
-          # collect validation errors from markers here
-          set_marker marker, on: context
-        end
+        markers.each { |marker| set_marker marker, on: context }
       end
     end
 
