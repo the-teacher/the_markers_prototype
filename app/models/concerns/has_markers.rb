@@ -7,16 +7,20 @@ module HasMarkers
 
   included do
     attr_accessor :mark_with
+    attr_reader   :markers_errors
+
     has_many :marker_relations, as: :holder
     has_many :markers, through: :marker_relations
 
     after_save :mark_object
+    after_initialize :init_markers_errors
 
     def set_marker title, opts = {}
       opts.symbolize_keys!
       context_name = opts.delete(:on)
 
       marker = find_or_create_marker(title, context_name)
+      # self.markers_errors << marker.errors
       marker_relations.create(marker: marker)
     end
 
@@ -28,6 +32,10 @@ module HasMarkers
     end
 
     private
+
+    def init_markers_errors
+      @markers_errors = ActiveModel::Errors.new self
+    end
 
     def mark_object
       return true  if  mark_with.blank?

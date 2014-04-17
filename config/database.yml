@@ -5,6 +5,7 @@
 #   gem 'sqlite3'
 #
 default: &default
+  reconnect: true
   adapter: sqlite3
   pool: 5
   timeout: 5000
