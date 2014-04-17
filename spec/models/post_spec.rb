@@ -2,6 +2,19 @@ require 'spec_helper'
 
 describe Post do
 
+  describe "get errors form marker" do
+    let(:post) { create :filled_post_marked_with_2_markers_on_2_contexts }
+    
+    it "should has validation errors from marker" do
+      post.set_marker "", on: :default
+      post.save
+
+      post.markers_errors.count.should eq 2
+      MarkerRelation.count.should eq 2
+      Marker.count.should eq 2
+    end
+  end
+
   describe "unmark object" do
     let(:post) { create :filled_post_marked_with_2_markers_on_2_contexts }
 

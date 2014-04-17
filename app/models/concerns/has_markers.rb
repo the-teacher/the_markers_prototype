@@ -12,7 +12,9 @@ module HasMarkers
     has_many :marker_relations, as: :holder
     has_many :markers, through: :marker_relations
 
-    after_save :mark_object
+    before_validation :mark_object, on: :update
+    after_save        :mark_object, on: :create
+
     after_initialize :init_markers_errors
 
     def set_marker title, opts = {}
@@ -20,8 +22,12 @@ module HasMarkers
       context_name = opts.delete(:on)
 
       marker = find_or_create_marker(title, context_name)
-      # self.markers_errors << marker.errors
       marker_relations.create(marker: marker)
+      copy_markers_errors_from marker
+    end
+
+    def copy_markers_errors_from marker
+      marker.errors.each{ |attr, error| self.markers_errors.add(attr, error) }
     end
 
     def remove_marker title
