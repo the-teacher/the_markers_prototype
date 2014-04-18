@@ -1,17 +1,49 @@
 require 'spec_helper'
 
 describe Post do
+  describe "clanup markers_errors" do
+    let(:post) { create :filled_post }
+
+    it "cleanup errors on update" do
+      post.set_marker "-"
+      post.markers_errors.count.should eq 1
+      post.markers_valid?.should eq false
+
+      post.update(title: "Hello").should eq true
+      post.markers_valid?.should eq true
+    end
+
+    it "check errors" do
+      post.set_marker "-"
+      post.markers_errors.count.should eq 1
+      post.markers_valid?.should eq false
+    end
+
+    it "errors count" do
+      post.set_marker "-"
+      post.markers_errors.count.should eq 1
+
+      post.set_marker "-"
+      post.markers_errors.count.should eq 2
+
+      post.set_marker "-"
+      post.markers_errors.count.should eq 3
+    end
+  end
 
   describe "get errors form marker" do
     let(:post) { create :filled_post_marked_with_2_markers_on_2_contexts }
     
     it "should has validation errors from marker" do
       post.set_marker "", on: :default
-      post.save
-
       post.markers_errors.count.should eq 2
-      MarkerRelation.count.should eq 2
-      Marker.count.should eq 2
+
+      # markers errors should be cleanup on any object save/update
+      post.save
+      post.markers_errors.count.should eq 0
+
+      MarkerRelation.count.should      eq 2
+      Marker.count.should              eq 2
     end
   end
 
