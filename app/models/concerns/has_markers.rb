@@ -33,7 +33,7 @@ module HasMarkers
       copy_markers_errors_from marker
     end
 
-    def set_markers= markers_with_context = {}
+    def set_markers markers_with_context = {}
       self.mark_with = markers_with_context
       mark_object
     end

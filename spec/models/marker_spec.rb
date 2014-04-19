@@ -39,10 +39,10 @@ describe Marker do
       markers = create_list(:filled_marker, 10)
       Marker.count.should eq 10
 
-      puts
-      Marker.all.each do |m|
-        puts "Marker: #{ m.slug } => #{ m.title }"
-      end
+      # puts
+      # Marker.all.each do |m|
+      #   puts "Marker: #{ m.slug } => #{ m.title }"
+      # end
 
       MarkersContext.count.should eq 1
     end

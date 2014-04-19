@@ -1,6 +1,38 @@
 require 'spec_helper'
 
 describe Post do
+  describe "set_markers setter" do
+    let(:post) { create :filled_post }
+
+    it "set few valid markers" do
+      Marker.count.should         eq 0
+      MarkersContext.count.should eq 0
+      MarkerRelation.count.should eq 0
+
+      post.set_markers({
+        actors: ["Брюс Уиллис", "Эдди Мёрфи", "Sigourney Weaver"],
+        stars:  ["Sigourney Weaver", " twenty-cent", "20 '¢' cents"]
+      })
+
+      MarkersContext.count.should eq 2
+      Marker.count.should         eq 5
+      MarkerRelation.count.should eq 5
+    end
+
+    it "set few valid markers" do
+      post.set_markers({
+        actors: ["Брюс Уиллис", "Эдди Мёрфи", "Sigourney Weaver"],
+        stars:  ["-", " twenty-cent", "$"]
+      })
+
+      post.markers_errors.count.should eq 2
+
+      MarkersContext.count.should eq 2
+      Marker.count.should         eq 4
+      MarkerRelation.count.should eq 4
+    end  
+  end
+
   describe "clanup markers_errors" do
     let(:post) { create :filled_post }
 
@@ -34,16 +66,21 @@ describe Post do
   describe "get errors form marker" do
     let(:post) { create :filled_post_marked_with_2_markers_on_2_contexts }
     
+    it "check basic values" do
+      post
+      MarkerRelation.count.should eq 2
+      Marker.count.should         eq 2
+    end
+
     it "should has validation errors from marker" do
       post.set_marker "", on: :default
       post.markers_errors.count.should eq 2
+    end
 
-      # markers errors should be cleanup on any object save/update
+    it "should cleanup markers validation on each save/update" do
+      post.set_marker "", on: :default
       post.save
       post.markers_errors.count.should eq 0
-
-      MarkerRelation.count.should      eq 2
-      Marker.count.should              eq 2
     end
   end
 
